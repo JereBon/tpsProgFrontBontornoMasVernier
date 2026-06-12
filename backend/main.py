@@ -7,6 +7,11 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 import json
+import mercadopago
+
+MP_ACCESS_TOKEN = "APP_USR-4752813917919247-061120-97c09eb7ec0739986d996af74afd2ccd-2928363792"
+FRONTEND_URL = "http://localhost:5173"
+NGROK_URL = "https://chewer-twerp-traction.ngrok-free.dev"  # apunta al frontend (5173)
 
 SECRET_KEY = "prog4-secret-key-2024"
 ALGORITHM = "HS256"
@@ -191,3 +196,34 @@ def delete_participante(id: int, session: Session = Depends(get_session), user=D
     session.delete(participante)
     session.commit()
     return {"ok": True}
+
+
+class PreferenciaRequest(SQLModel):
+    titulo: str
+    precio: float
+
+
+@app.post("/crear-preferencia")
+def crear_preferencia(data: PreferenciaRequest, user=Depends(get_current_user)):
+    sdk = mercadopago.SDK(MP_ACCESS_TOKEN)
+    preference_data = {
+        "items": [{
+            "title": data.titulo,
+            "quantity": 1,
+            "unit_price": data.precio,
+            "currency_id": "ARS",
+        }],
+        "back_urls": {
+            "success": f"{NGROK_URL}/pago/exitoso?ngrok-skip-browser-warning=1",
+            "failure": f"{NGROK_URL}/pago/fallido?ngrok-skip-browser-warning=1",
+            "pending": f"{NGROK_URL}/pago/pendiente?ngrok-skip-browser-warning=1",
+        },
+        "auto_return": "approved",
+    }
+    response = sdk.preference().create(preference_data)
+    if response["status"] not in (200, 201):
+        raise HTTPException(status_code=500, detail="Error al crear preferencia en Mercado Pago")
+    init_point = response["response"]["init_point"]
+    return {"init_point": init_point}
+
+

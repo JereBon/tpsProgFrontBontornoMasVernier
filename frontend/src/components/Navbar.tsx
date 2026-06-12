@@ -34,6 +34,9 @@ export default function Navbar() {
           <Link to="/lista" className="hover:text-green-200 transition font-semibold">
             Lista
           </Link>
+          <Link to="/cursos" className="hover:text-green-200 transition font-semibold">
+            Cursos
+          </Link>
           {user?.rol === "ADMIN" && (
             <Link to="/nuevo" className="hover:text-green-200 transition font-semibold">
               Nuevo Participante
@@ -55,6 +58,13 @@ export default function Navbar() {
             onClick={() => setIsOpen(false)}
           >
             Lista
+          </Link>
+          <Link
+            to="/cursos"
+            className="block text-white hover:text-green-200 font-semibold"
+            onClick={() => setIsOpen(false)}
+          >
+            Cursos
           </Link>
           {user?.rol === "ADMIN" && (
             <Link

@@ -1,30 +1,38 @@
+import { useId, type RefObject } from "react";
 import { useParticipantes } from "../context/ParticipantesContext";
 import { useAuth } from "../context/AuthContext";
+import type { FiltrosState } from "../hooks/useFiltros";
 
-export interface FiltrosState {
-  buscar: string;
-  modalidad: string;
-  nivel: string;
-}
+export type { FiltrosState };
 
 interface Props {
   filtros: FiltrosState;
   setFiltros: (f: FiltrosState) => void;
   onLimpiar: () => void;
+  buscarRef?: RefObject<HTMLInputElement>;
 }
 
 const MODALIDADES = ["Todas", "Presencial", "Virtual", "Híbrido"];
 const NIVELES = ["Todos", "Principiante", "Intermedio", "Avanzado"];
 
-export default function Filtros({ filtros, setFiltros, onLimpiar }: Props) {
+export default function Filtros({ filtros, setFiltros, onLimpiar, buscarRef }: Props) {
   const { resetear } = useParticipantes();
   const { user } = useAuth();
+
+  const buscarId = useId();
+  const modalidadFiltroId = useId();
+  const nivelFiltroId = useId();
+
   return (
     <div className="bg-white rounded shadow p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Filtrar por Nombre</label>
+          <label htmlFor={buscarId} className="block text-xs font-medium text-gray-600 mb-1">
+            Filtrar por Nombre
+          </label>
           <input
+            ref={buscarRef}
+            id={buscarId}
             type="text"
             placeholder="Buscar participante..."
             value={filtros.buscar}
@@ -33,8 +41,11 @@ export default function Filtros({ filtros, setFiltros, onLimpiar }: Props) {
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Filtrar por Modalidad</label>
+          <label htmlFor={modalidadFiltroId} className="block text-xs font-medium text-gray-600 mb-1">
+            Filtrar por Modalidad
+          </label>
           <select
+            id={modalidadFiltroId}
             value={filtros.modalidad}
             onChange={(e) => setFiltros({ ...filtros, modalidad: e.target.value })}
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
@@ -43,8 +54,11 @@ export default function Filtros({ filtros, setFiltros, onLimpiar }: Props) {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Filtrar por Nivel</label>
+          <label htmlFor={nivelFiltroId} className="block text-xs font-medium text-gray-600 mb-1">
+            Filtrar por Nivel
+          </label>
           <select
+            id={nivelFiltroId}
             value={filtros.nivel}
             onChange={(e) => setFiltros({ ...filtros, nivel: e.target.value })}
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
@@ -76,4 +90,3 @@ export default function Filtros({ filtros, setFiltros, onLimpiar }: Props) {
     </div>
   );
 }
-

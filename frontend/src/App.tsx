@@ -1,4 +1,3 @@
-// Autores de la Comisión 1: Jeremías Bontorno, Nicolas Hassan, Axel Mejias, Valentino Vernier, Luciano Mas y Leandro Nuñez.
 import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
@@ -8,6 +7,10 @@ import EditarPage from "./pages/EditarPage";
 import LoginPage from "./pages/LoginPage";
 import PublicaPage from "./pages/PublicaPage";
 import MenuPage from "./pages/MenuPage";
+import CursosPage from "./pages/CursosPage";
+import PagoExitosoPage from "./pages/PagoExitosoPage";
+import PagoFallidoPage from "./pages/PagoFallidoPage";
+import PagoPendientePage from "./pages/PagoPendientePage";
 import PrivateRoute from "./routes/PrivateRoute";
 
 export default function App() {
@@ -24,6 +27,10 @@ export default function App() {
         <Route path="/lista" element={<PrivateRoute><ListaPage /></PrivateRoute>} />
         <Route path="/nuevo" element={<PrivateRoute rol="ADMIN"><FormularioPage /></PrivateRoute>} />
         <Route path="/editar/:id" element={<PrivateRoute rol="ADMIN"><EditarPage /></PrivateRoute>} />
+        <Route path="/cursos" element={<PrivateRoute><CursosPage /></PrivateRoute>} />
+        <Route path="/pago/exitoso" element={<PagoExitosoPage />} />
+        <Route path="/pago/fallido" element={<PagoFallidoPage />} />
+        <Route path="/pago/pendiente" element={<PagoPendientePage />} />
       </Routes>
     </div>
   );

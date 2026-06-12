@@ -19,6 +19,12 @@ export default function MenuPage() {
       >
         Lista de Participantes
       </Link>
+      <Link
+        to="/cursos"
+        className="block bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded text-center text-lg transition"
+      >
+        Cursos disponibles
+      </Link>
       {user?.rol === "ADMIN" && (
         <Link
           to="/nuevo"
