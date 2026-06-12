@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - TP1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+
+    <div class="login-container">
+        <h2>Ingreso al Sistema</h2>
+        <input type="text" id="user" placeholder="Usuario">
+        <input type="password" id="pass" placeholder="Contraseña">
+        <button class="btn-ingresar" onclick="ingresar()">Ingresar</button>
+        <div id="mensaje"></div>
+    </div>
+
+    <script>
+        async function ingresar() {
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
+            const mensajeDiv = document.getElementById('mensaje');
+            mensajeDiv.innerText = "";
+
+            if (!user || !pass) {
+                mensajeDiv.style.color = "red";
+                mensajeDiv.innerText = "Por favor, complete ambos campos.";
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/tp1/login?user=${user}&pass=${pass}`);
+                const data = await response.json();
+
+                if (data.respuesta === "OK") {
+                    mensajeDiv.style.color = "green";
+                    mensajeDiv.innerText = data.mje;
+                    setTimeout(() => { window.location.href = "lista.html"; }, 1000);
+                } else {
+                    mensajeDiv.style.color = "red";
+                    mensajeDiv.innerText = data.mje;
+                }
+            } catch (error) {
+                mensajeDiv.style.color = "red";
+                mensajeDiv.innerText = "Error de conexión.";
+            }
+        }
+    </script>
+</body>
+</html>

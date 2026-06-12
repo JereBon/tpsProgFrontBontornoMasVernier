@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Usuarios - TP1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h2>Gestión de Usuarios</h2>
+
+    <div class="search-container">
+        <input type="text" id="txtBuscar" placeholder="Buscar usuario...">
+        <button class="btn-buscar" onclick="buscarUsuarios()">Buscar</button>
+    </div>
+
+    <table id="tablaUsuarios">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Usuario</th>
+                <th>Bloqueado</th>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Bloquear</th>
+                <th>Desbloquear</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla"></tbody>
+    </table>
+
+    <script>
+        async function cargarUsuarios(filtroUsuario = '') {
+            const url = `http://localhost:8080/tp/lista?action=BUSCAR&usuario=${filtroUsuario}`;
+            try {
+                const response = await fetch(url);
+                const usuarios = await response.json();
+                const tbody = document.getElementById('cuerpoTabla');
+                tbody.innerHTML = "";
+
+                if (usuarios.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='7'>No hay resultados</td></tr>";
+                    return;
+                }
+
+                usuarios.forEach(u => {
+                    const fila = document.createElement('tr');
+                    fila.className = u.bloqueado === 'Y' ? 'bloqueado' : 'no-bloqueado';
+                    fila.innerHTML = `
+                        <td>${u.id}</td>
+                        <td>${u.usuario}</td>
+                        <td>${u.bloqueado}</td>
+                        <td>${u.apellido}</td>
+                        <td>${u.nombre}</td>
+                        <td><button class="btn-bloquear" onclick="cambiarEstado(${u.id}, 'Y')">Bloquear</button></td>
+                        <td><button class="btn-desbloquear" onclick="cambiarEstado(${u.id}, 'N')">Desbloquear</button></td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+            } catch (error) {
+                alert("Error al conectar con el servidor.");
+            }
+        }
+
+        function buscarUsuarios() {
+            cargarUsuarios(document.getElementById('txtBuscar').value);
+        }
+
+        async function cambiarEstado(idUser, estado) {
+            const url = `http://localhost:8080/tp/lista?action=BLOQUEAR&idUser=${idUser}&estado=${estado}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.respuesta === "OK") {
+                    buscarUsuarios();
+                } else {
+                    alert("Error: " + data.mje);
+                }
+            } catch (error) {
+                alert("Error de comunicación.");
+            }
+        }
+
+        // Cargar la lista de usuarios cuando la página se carga por primera vez.
+        cargarUsuarios();
+    </script>
+</body>
+</html>
