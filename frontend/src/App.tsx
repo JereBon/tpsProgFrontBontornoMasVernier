@@ -1,3 +1,4 @@
+// Autores de la Comisión 1: Jeremías Bontorno, Nicolas Hassan, Axel Mejias, Valentino Vernier, Luciano Mas y Leandro Nuñez.
 import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";

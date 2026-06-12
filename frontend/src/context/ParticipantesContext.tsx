@@ -2,7 +2,6 @@ import { createContext, useReducer, useEffect, useContext, useCallback, type Rea
 import axios from "axios";
 import { Participante } from "../models/Participante";
 import { participantesReducer, initialState } from "../reducers/participantesReducer";
-import { useAuth } from "./AuthContext";
 
 interface ContextType {
   participantes: Participante[];
@@ -26,23 +25,19 @@ function getAuthHeaders() {
 
 export function ParticipantesProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(participantesReducer, initialState);
-  const { user } = useAuth();
+
+  const fetchParticipantes = async () => {
+    try {
+      const response = await axios.get(API_URL, { headers: getAuthHeaders() });
+      dispatch({ type: "GET_PARTICIPANTES", payload: response.data });
+    } catch (error) {
+      console.error("Error al obtener participantes", error);
+    }
+  };
 
   useEffect(() => {
-    if (!user) {
-      dispatch({ type: "RESET", payload: [] });
-      return;
-    }
-    const fetchParticipantes = async () => {
-      try {
-        const response = await axios.get(API_URL, { headers: getAuthHeaders() });
-        dispatch({ type: "GET_PARTICIPANTES", payload: response.data });
-      } catch (error) {
-        console.error("Error al obtener participantes", error);
-      }
-    };
     fetchParticipantes();
-  }, [user]);
+  }, []);
 
   const agregar = useCallback(async (p: Participante) => {
     try {

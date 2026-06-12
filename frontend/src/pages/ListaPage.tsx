@@ -1,22 +1,29 @@
-import { useRef } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import Filtros from "../components/Filtros";
+import Filtros, { type FiltrosState } from "../components/Filtros";
 import ParticipanteCard from "../components/ParticipanteCard";
 import { useParticipantes } from "../context/ParticipantesContext";
 import { useAuth } from "../context/AuthContext";
-import { useFiltros } from "../hooks/useFiltros";
-import { useAtajoTeclado } from "../hooks/useAtajoTeclado";
 
 export default function ListaPage() {
   const { participantes } = useParticipantes();
   const { user } = useAuth();
 
-  const { filtros, setFiltros, limpiarFiltros, filtrados } = useFiltros(participantes);
+  const [filtros, setFiltros] = useState<FiltrosState>({
+    buscar: "",
+    modalidad: "Todas",
+    nivel: "Todos",
+  });
 
-  const buscarRef = useRef<HTMLInputElement>(null);
+  const handleLimpiarFiltros = () => {
+    setFiltros({ buscar: "", modalidad: "Todas", nivel: "Todos" });
+  };
 
-  useAtajoTeclado({ key: "b", ctrl: true }, () => {
-    buscarRef.current?.focus();
+  const filtrados = participantes.filter((p) => {
+    const matchNombre = p.nombre.toLowerCase().includes(filtros.buscar.toLowerCase());
+    const matchModalidad = filtros.modalidad === "Todas" || p.modalidad === filtros.modalidad;
+    const matchNivel = filtros.nivel === "Todos" || p.nivel === filtros.nivel;
+    return matchNombre && matchModalidad && matchNivel;
   });
 
   return (
@@ -43,8 +50,7 @@ export default function ListaPage() {
       <Filtros
         filtros={filtros}
         setFiltros={setFiltros}
-        onLimpiar={limpiarFiltros}
-        buscarRef={buscarRef}
+        onLimpiar={handleLimpiarFiltros}
       />
 
       {filtrados.length === 0 ? (
@@ -58,14 +64,6 @@ export default function ListaPage() {
           ))}
         </div>
       )}
-
-      <p className="text-xs text-gray-400 text-center pb-2">
-        Presioná{" "}
-        <kbd className="bg-gray-100 border border-gray-300 rounded px-1 py-0.5 font-mono text-xs">
-          Ctrl+B
-        </kbd>{" "}
-        para enfocar el filtro de búsqueda
-      </p>
     </div>
   );
 }

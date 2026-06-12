@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useId, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { Participante } from "../models/Participante";
 import { useParticipantes } from "../context/ParticipantesContext";
 
@@ -26,21 +26,6 @@ export default function Formulario({ onSuccess }: FormularioProps) {
   const { agregar, editar, participanteEditando, seleccionarParaEditar } = useParticipantes();
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
-
-  const nombreRef = useRef<HTMLInputElement>(null);
-
-  const nombreId = useId();
-  const emailId = useId();
-  const edadId = useId();
-  const paisId = useId();
-  const nivelId = useId();
-  const modalidadId = useId();
-  const tecnologiasId = useId();
-  const terminosId = useId();
-
-  useEffect(() => {
-    nombreRef.current?.focus();
-  }, []);
 
   useEffect(() => {
     if (participanteEditando) {
@@ -97,7 +82,7 @@ export default function Formulario({ onSuccess }: FormularioProps) {
       agregar(nuevo);
     }
     setForm(initialForm);
-
+    
     if (onSuccess) {
       onSuccess();
     }
@@ -118,74 +103,44 @@ export default function Formulario({ onSuccess }: FormularioProps) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor={nombreId} className="block text-xs font-medium text-gray-600 mb-1">
-            Nombre
-          </label>
-          <input
-            ref={nombreRef}
-            id={nombreId}
-            type="text"
-            placeholder="Nombre"
-            value={form.nombre}
-            onChange={(e) => setForm((prev) => ({ ...prev, nombre: e.target.value }))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Nombre"
+          value={form.nombre}
+          onChange={(e) => setForm((prev) => ({ ...prev, nombre: e.target.value }))}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+        />
 
-        <div>
-          <label htmlFor={emailId} className="block text-xs font-medium text-gray-600 mb-1">
-            Email
-          </label>
-          <input
-            id={emailId}
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
-          />
-        </div>
+        <input
+          type="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+        />
 
-        <div>
-          <label htmlFor={edadId} className="block text-xs font-medium text-gray-600 mb-1">
-            Edad
-          </label>
-          <input
-            id={edadId}
-            type="number"
-            placeholder="Edad"
-            value={form.edad}
-            onChange={(e) => setForm((prev) => ({ ...prev, edad: e.target.value }))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
-          />
-        </div>
+        <input
+          type="number"
+          placeholder="Edad"
+          value={form.edad}
+          onChange={(e) => setForm((prev) => ({ ...prev, edad: e.target.value }))}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+        />
 
-        <div>
-          <label htmlFor={paisId} className="block text-xs font-medium text-gray-600 mb-1">
-            País
-          </label>
-          <select
-            id={paisId}
-            value={form.pais}
-            onChange={(e) => setForm((prev) => ({ ...prev, pais: e.target.value }))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
-          >
-            {PAISES.map((p) => <option key={p}>{p}</option>)}
-          </select>
-        </div>
+        <select
+          value={form.pais}
+          onChange={(e) => setForm((prev) => ({ ...prev, pais: e.target.value }))}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+        >
+          {PAISES.map((p) => <option key={p}>{p}</option>)}
+        </select>
 
         <div className="md:col-span-2">
           <p className="text-sm font-semibold text-green-700 mb-1">Modalidad</p>
           <div className="flex gap-4">
             {MODALIDADES.map((m) => (
-              <label
-                key={m}
-                htmlFor={`${modalidadId}-${m}`}
-                className="flex items-center gap-1 text-sm cursor-pointer"
-              >
+              <label key={m} className="flex items-center gap-1 text-sm cursor-pointer">
                 <input
-                  id={`${modalidadId}-${m}`}
                   type="radio"
                   name="modalidad"
                   value={m}
@@ -202,13 +157,8 @@ export default function Formulario({ onSuccess }: FormularioProps) {
           <p className="text-sm font-semibold text-green-700 mb-1">Tecnologías</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {TECNOLOGIAS.map((tec) => (
-              <label
-                key={tec}
-                htmlFor={`${tecnologiasId}-${tec}`}
-                className="flex items-center gap-2 text-sm cursor-pointer"
-              >
+              <label key={tec} className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
-                  id={`${tecnologiasId}-${tec}`}
                   type="checkbox"
                   checked={form.tecnologias.includes(tec)}
                   onChange={() => handleTecnologia(tec)}
@@ -219,28 +169,22 @@ export default function Formulario({ onSuccess }: FormularioProps) {
           </div>
         </div>
 
-        <div>
-          <label htmlFor={nivelId} className="block text-xs font-medium text-gray-600 mb-1">
-            Nivel
-          </label>
-          <select
-            id={nivelId}
-            value={form.nivel}
-            onChange={(e) => setForm((prev) => ({ ...prev, nivel: e.target.value }))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
-          >
-            {NIVELES.map((n) => <option key={n}>{n}</option>)}
-          </select>
-        </div>
+        <select
+          value={form.nivel}
+          onChange={(e) => setForm((prev) => ({ ...prev, nivel: e.target.value }))}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+        >
+          {NIVELES.map((n) => <option key={n}>{n}</option>)}
+        </select>
 
         <div className="flex items-center gap-2">
           <input
-            id={terminosId}
             type="checkbox"
+            id="terminos"
             checked={form.aceptaTerminos}
             onChange={(e) => setForm((prev) => ({ ...prev, aceptaTerminos: e.target.checked }))}
           />
-          <label htmlFor={terminosId} className="text-sm cursor-pointer">
+          <label htmlFor="terminos" className="text-sm cursor-pointer">
             Acepto los términos y condiciones del evento
           </label>
         </div>
